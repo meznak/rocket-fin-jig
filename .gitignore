@@ -1,5 +1,6 @@
 *.py[co]
 *.svg
+*.swp
 
 # Packages
 *.egg
