@@ -10,4 +10,3 @@ Inspired by Ryan Rix's Arcas-IV [fin jig](http://www.thingiverse.com/thing:18713
 TODO
 ====
 make more copies
-accommodate more/fewer fins
