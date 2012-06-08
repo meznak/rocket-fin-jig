@@ -1,3 +1,6 @@
 20120607
 accommodates user-specified number of fins
 can output to user-specified file
+tiles specified number of jigs (default 4)
+caught div by 0
+sanitized fin number input
