@@ -1,7 +1,7 @@
-#!/bin/python
+#!/usr/bin/env python
 
-from svgfig import *
 from math import sqrt, ceil, floor
+from svgfig import *
 
 class FinJig(object):
 	def __init__(self, *args):
@@ -26,7 +26,6 @@ def makeJig(n=0, d=0, h=0, w=0, outFile="jig.svg"):
 	numPlates = int(floor(float(raw_input("Number of plates: "))))
 	if (numPlates == "") or (numPlates < 1):
 		numPlates = 2
-	print(numPlates)
 	jig = FinJig(n, d, h, w)
 	if jig.numFins < 2 or jig.numFins > 360:
 		print("Number of fins must be between 2 and 360.")
@@ -72,4 +71,5 @@ if __name__ == '__main__':
 		makeJig()
 	else:
 		print("Usage: {} [numFins, body_d, fin_h, fin_w] [outFile]".format(sys.argv[0]))
-	sys.exit(1)
+		sys.exit(1)
+	sys.exit(0)

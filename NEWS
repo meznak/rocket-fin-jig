@@ -1,3 +1,7 @@
+20120608
+Fixed #!
+added requirement for svgfig
+
 20120607
 accommodates user-specified number of fins
 can output to user-specified file

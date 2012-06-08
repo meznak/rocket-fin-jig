@@ -7,6 +7,11 @@ Inspired by Ryan Rix's Arcas-IV [fin jig](http://www.thingiverse.com/thing:18713
 
 2012 Nathan Plamondon CC-BY-SA
 
+REQUIRES
+========
+svgfig - https://code.google.com/p/svgfig/
+
 TODO
 ====
-make more copies
+add fillet notches
+add alignment indicators
