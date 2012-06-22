@@ -43,7 +43,7 @@ def makeJig(n=0, d=0, h=0, w=0, outFile="jig.svg"):
 	fillets = []
 	for i in range(jig.numFins):
 		fins.append(SVG("rect", x=-fin_offw, y=jig.body_r, width=jig.fin_w, height=jig.fin_h, transform="rotate({})".format(i * fin_angle)))
-		fillets.append(SVG("rect", x=fillet_x, y=fillet_y, height=fillet, width=fillet, transform="rotate({},{},{}) rotate({},{},{})".format(fin_angle * i, 0, 0, fin_angle/2, 0, fillet_y + jig.fin_w)))
+		fillets.append(SVG("rect", x=fillet_x, y=fillet_y, height=fillet, width=fillet, transform="rotate({},{},{}) rotate({},{},{})".format(fin_angle * i, 0, 0, 45, 0, fillet_y + jig.fin_w)))
 	finset = SVG("g", *fins)
 	filletset = SVG("g", *fillets)
 	plates = []
@@ -53,7 +53,8 @@ def makeJig(n=0, d=0, h=0, w=0, outFile="jig.svg"):
 	whole_x = (square + 2) * numPerRow
 	whole_y = (square + 2) * ceil((numPlates / numPerRow))
 	for i in range(1,numPlates+1):
-		rocket = SVG("g", body, finset, filletset, transform="translate({},{}) rotate({})".format(center,center, fin_angle/2))
+		lugNotch = SVG("rect", x=-0.5, y=jig.body_r, width=1, height=2, transform="rotate({})".format(-fin_angle/2))
+		rocket = SVG("g", body, finset, filletset, lugNotch, transform="translate({},{}) rotate({})".format(center,center, fin_angle/2))
 		plates.append(SVG("g", edge, rocket, transform="translate({},{})".format(xpos, ypos)))
 		if i % numPerRow == 0:
 			xpos = 0

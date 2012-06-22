@@ -13,5 +13,3 @@ svgfig - https://code.google.com/p/svgfig/
 
 TODO
 ====
-add fillet notches
-add alignment indicators
