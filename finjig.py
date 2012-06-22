@@ -33,13 +33,19 @@ def makeJig(n=0, d=0, h=0, w=0, outFile="jig.svg"):
 	square = (2 * jig.fin_h + jig.body_d) + 20
 	center = square/2
 	edge = SVG("rect", cx=0, cy=0, width=square, height=square)
-	body = SVG("circle", cx=center, cy=center, r=jig.body_r)
+	body = SVG("circle", r=jig.body_r)
 	fin_angle = 360 / jig.numFins
 	fin_offw = jig.fin_w / 2
+	fillet = jig.fin_w * 3
+	fillet_x = -jig.fin_w
+	fillet_y = jig.body_r - fillet * 0.707
 	fins = []
+	fillets = []
 	for i in range(jig.numFins):
 		fins.append(SVG("rect", x=-fin_offw, y=jig.body_r, width=jig.fin_w, height=jig.fin_h, transform="rotate({})".format(i * fin_angle)))
-	finset = SVG("g", *fins, transform="translate({},{})".format(center,center))
+		fillets.append(SVG("rect", x=fillet_x, y=fillet_y, height=fillet, width=fillet, transform="rotate({},{},{}) rotate({},{},{})".format(fin_angle * i, 0, 0, fin_angle/2, 0, fillet_y + jig.fin_w)))
+	finset = SVG("g", *fins)
+	filletset = SVG("g", *fillets)
 	plates = []
 	xpos = 0
 	ypos = 0
@@ -47,7 +53,7 @@ def makeJig(n=0, d=0, h=0, w=0, outFile="jig.svg"):
 	whole_x = (square + 2) * numPerRow
 	whole_y = (square + 2) * ceil((numPlates / numPerRow))
 	for i in range(1,numPlates+1):
-		rocket = SVG("g", body, finset, transform="rotate({},{},{})".format(fin_angle/2,center,center))
+		rocket = SVG("g", body, finset, filletset, transform="translate({},{}) rotate({})".format(center,center, fin_angle/2))
 		plates.append(SVG("g", edge, rocket, transform="translate({},{})".format(xpos, ypos)))
 		if i % numPerRow == 0:
 			xpos = 0
