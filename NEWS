@@ -1,3 +1,7 @@
+20160311
+refactored and rewrote for svgwrite
+added text identifier
+
 20120608
 Fixed #!
 added requirement for svgfig
