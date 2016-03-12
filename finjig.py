@@ -13,7 +13,7 @@ class FinJig(object):
             if i == 0:
                 self.get_params()
                 return
-            
+
         self.body_d = float(args[0])
         self.body_r = self.body_d / 2.0
         self.num_fins = int(floor(float(args[1])))
@@ -23,7 +23,7 @@ class FinJig(object):
         self.num_plates = int(floor(float(args[5])))
         self.out_file = args[6]
 
-        
+
     def get_params(self):
         self.num_fins = int(floor(input("Number of fins: ")))
         print("All units are in mm")
@@ -35,14 +35,14 @@ class FinJig(object):
         self.num_plates = int(floor(float(raw_input("Number of plates: "))))
         self.out_file = raw_input("File name (.svg): ")
 
-        
+
 def make_jig(diameter=0, num_fins=0, width=0, height=0, name="^", num_plates=3, out_file="out.svg"):
     """Assemble fin jig"""
     if (num_plates < 1):
         num_plates = 3
     else:
         num_plates = int(num_plates)
-        
+
     jig = FinJig(diameter, num_fins, width, height, name, num_plates, out_file)
 
     if jig.num_fins < 3 or jig.num_fins > 360:
@@ -69,7 +69,7 @@ def draw_jig(jig):
     fin_x_pos = center - jig.fin_w / 2.0
     fin_y_pos = center - jig.fin_h - jig.body_r
     fin_angle = 360 / jig.num_fins
-    
+
     # assemble cutout
     xfm = svgwrite.mixins.Transform
 
@@ -93,7 +93,7 @@ def draw_jig(jig):
 
     for i in range(jig.num_fins):
         new_fin = copy.deepcopy(fin)
-        
+
         xfm.rotate(new_fin, angle = i * fin_angle, center=(mm(center), mm(center)))
         jig.cutout.add(new_fin)
 
@@ -102,7 +102,7 @@ def draw_jig(jig):
 
 def draw_plates(jig):
     """Lay out the jig into multiple plates"""
-    
+
     # lay out plates
     square = (2 * jig.fin_h) + jig.body_d + 20
     center = square / 2
@@ -113,23 +113,23 @@ def draw_plates(jig):
 
     out = svgwrite.Drawing(jig.out_file, (mm(plate_width), mm(plate_height)))
     xfm = svgwrite.mixins.Transform
-    
+
     for i in range(jig.num_plates):
         cutout_cp = copy.deepcopy(jig.cutout)
         x_offset = i % num_per_row * square
         y_offset = floor(i / num_per_row) * square
-            
+
         xfm.translate(cutout_cp, tx = mm(x_offset), ty = mm(y_offset))
         out.add(cutout_cp)
 
     out.save()
-    
+
 
 def mm(val):
     """Scale from px to mm"""
     return val * 3.543307
 
-
+j
 if __name__ == '__main__':
     import sys
     args = len(sys.argv)

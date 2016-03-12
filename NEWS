@@ -2,6 +2,10 @@
 refactored and rewrote for svgwrite
 added text identifier
 
+20120622
+added fillets
+added lug line notch
+
 20120608
 Fixed #!
 added requirement for svgfig
