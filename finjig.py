@@ -15,7 +15,7 @@ class FinJig(object):
                 return
             
         self.body_d = float(args[0])
-        self.body_r = 0.5 * float(self.body_d/2)
+        self.body_r = self.body_d / 2.0
         self.num_fins = int(floor(float(args[1])))
         self.fin_w = float(args[2])
         self.fin_h = float(args[3])
@@ -37,6 +37,7 @@ class FinJig(object):
 
         
 def make_jig(diameter=0, num_fins=0, width=0, height=0, name="^", num_plates=3, out_file="out.svg"):
+    """Assemble fin jig"""
     if (num_plates < 1):
         num_plates = 3
     else:
@@ -51,39 +52,58 @@ def make_jig(diameter=0, num_fins=0, width=0, height=0, name="^", num_plates=3, 
         draw_jig(jig)
         draw_plates(jig)
 
+
 def draw_jig(jig):
     """build a jig drawing"""
-    
+
+    stroke_width = 0.5
+
     # plate properties
     square = (2 * jig.fin_h + jig.body_d) + 20
     center = square / 2
-    edge = shapes.Rect(size=(square,square), stroke="blue", stroke_width=1, fill="white")
-    marker = svgwrite.text.Text(jig.name, insert=(5,10))
+    edge = shapes.Rect(size=(mm(square), mm(square)), stroke="blue", stroke_width=stroke_width, fill="white")
+    text = svgwrite.text.Text(jig.name, insert=(mm(5), mm(10)))
 
     # body/fin properties
-    body = shapes.Circle(center=(center, center), r=jig.body_r, stroke="black", stroke_width=1, fill="white")
-    fin_offw = jig.fin_w / 2.0
-    fin_offh = jig.fin_h + jig.body_r
+    body = shapes.Circle(center=(mm(center), mm(center)), r=mm(jig.body_r), stroke="black", stroke_width=stroke_width, fill="white")
+    fin_x_pos = center - jig.fin_w / 2.0
+    fin_y_pos = center - jig.fin_h - jig.body_r
     fin_angle = 360 / jig.num_fins
     
     # assemble cutout
     xfm = svgwrite.mixins.Transform
 
     jig.cutout.add(edge)
-    jig.cutout.add(marker)
-    jig.cutout.add(body)
-    
+
+    xfm.scale(text, 5)
+    jig.cutout.add(text)
+
+    fin = svgwrite.container.Group()
+
+    fillet_scale = 1.5
+    fillet_x_pos = fin_x_pos + jig.fin_w * (1 - fillet_scale) / 2
+    fillet_y_center = center - jig.body_r + 1
+    fillet_y_pos = fillet_y_center - jig.fin_w * fillet_scale / 2
+
+    fillet = shapes.Rect(insert=(mm(fillet_x_pos), mm(fillet_y_pos)), size=(mm(jig.fin_w * fillet_scale), mm(jig.fin_w * fillet_scale)), stroke="black", stroke_width=stroke_width, fill="white")
+    xfm.rotate(fillet, angle = 45, center=(mm(center), mm(fillet_y_center)))
+
+    fin.add(fillet)
+    fin.add(shapes.Rect(insert=(mm(fin_x_pos), mm(fin_y_pos)), size=(mm(jig.fin_w), mm(jig.fin_h)), stroke="black", stroke_width=stroke_width, fill="white"))
+
     for i in range(jig.num_fins):
-        fin = shapes.Rect(insert=(center - fin_offw, center - fin_offh), size=(jig.fin_w, jig.fin_h), stroke="black", stroke_width=1, fill="white")
-        xfm.rotate(fin, angle = i * fin_angle, center=(center, center))
-        jig.cutout.add(fin)
+        new_fin = copy.deepcopy(fin)
+        
+        xfm.rotate(new_fin, angle = i * fin_angle, center=(mm(center), mm(center)))
+        jig.cutout.add(new_fin)
+
+    jig.cutout.add(body)
+
 
 def draw_plates(jig):
-
-    # lay out plates
-    xpos = 0
-    ypos = 0
+    """Lay out the jig into multiple plates"""
     
+    # lay out plates
     square = (2 * jig.fin_h) + jig.body_d + 20
     center = square / 2
 
@@ -91,7 +111,7 @@ def draw_plates(jig):
     plate_width = square * num_per_row
     plate_height  = square * ceil((jig.num_plates / num_per_row))
 
-    out = svgwrite.Drawing(jig.out_file, (plate_width, plate_height))
+    out = svgwrite.Drawing(jig.out_file, (mm(plate_width), mm(plate_height)))
     xfm = svgwrite.mixins.Transform
     
     for i in range(jig.num_plates):
@@ -99,17 +119,16 @@ def draw_plates(jig):
         x_offset = i % num_per_row * square
         y_offset = floor(i / num_per_row) * square
             
-        xfm.translate(cutout_cp, tx = x_offset, ty = y_offset)
+        xfm.translate(cutout_cp, tx = mm(x_offset), ty = mm(y_offset))
         out.add(cutout_cp)
 
-        
-        # if i % numPerRow == 0:
-        #     xpos = 0
-        #     ypos += square + 2    
-        # else:
-        #     xpos += square + 2
-
     out.save()
+    
+
+def mm(val):
+    """Scale from px to mm"""
+    return val * 3.543307
+
 
 if __name__ == '__main__':
     import sys
