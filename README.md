@@ -5,13 +5,8 @@ parametric rocket fin jig svg generator
 
 Inspired by Ryan Rix's Arcas-IV [fin jig](http://www.thingiverse.com/thing:18713).
 
-2012 Nathan Plamondon CC-BY-SA
+2012 - 2016 Nathan Plamondon CC-BY-SA
 
 REQUIRES
 ========
-svgfig - https://code.google.com/p/svgfig/
-
-TODO
-====
-add fillet notches
-add alignment indicators
+svgwrite - https://pypi.python.org/pypi/svgwrite
