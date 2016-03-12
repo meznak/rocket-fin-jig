@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from math import sqrt, ceil, floor
+import copy
 import svgwrite
 import svgwrite.shapes as shapes
 
@@ -15,7 +16,7 @@ class FinJig(object):
         self.body_r = 0.5 * float(self.body_d/2)
         self.fin_h = float(args[2])
         self.fin_w = float(args[3])
-        self.num_plates = floor(float(args[4]))
+        self.num_plates = int(floor(float(args[4])))
 
     def get_params(self):
         self.num_fins = int(floor(input("Number of fins: ")))
@@ -24,7 +25,7 @@ class FinJig(object):
         self.body_r = 0.5 * self.body_d
         self.fin_h = float(input("Fin height: "))
         self.fin_w = float(input("Fin width: "))
-        self.num_plates = floor(float(raw_input("Number of plates: ")))
+        self.num_plates = int(floor(float(raw_input("Number of plates: "))))
 
         
 def make_jig(num_fins=0, diameter=0, height=0, width=0, num_plates=3, out_file="jig.svg"):
@@ -56,40 +57,49 @@ def draw_jig(jig):
     fin_offh = jig.fin_h + jig.body_r
     fin_angle = 360 / jig.num_fins
     
-    dwg = svgwrite.Drawing()
+    cutout = svgwrite.container.Group()
     xfm = svgwrite.mixins.Transform
     
-    dwg.add(edge)
-    dwg.add(body)
+    cutout.add(edge)
+    cutout.add(body)
     
     for i in range(jig.num_fins):
         fin = shapes.Rect(insert=(center - fin_offw, center - fin_offh), size=(jig.fin_w, jig.fin_h), stroke="black", stroke_width=1, fill="white")
-        xfm.rotate(fin, i * fin_angle, center=(center, center))
-        dwg.add(fin)
+        xfm.rotate(fin, angle = i * fin_angle, center=(center, center))
+        cutout.add(fin)
 
-    return dwg
+    return cutout
 
-def draw_plates(jig, dwg, out_file):
+def draw_plates(jig, cutout, out_file):
 
     # lay out plates
     xpos = 0
     ypos = 0
-    num_per_row = ceil(sqrt(jig.num_plates))
-    # whole_x = (square + 2) * num_per_row
-    # whole_y = (square + 2) * ceil((num_plates / num_per_row))
+    
+    square = (2 * jig.fin_h) + jig.body_d + 20
+    center = square / 2
 
-    out = svgwrite.Drawing(out_file)
+    num_per_row = ceil(sqrt(jig.num_plates))
+    plate_width = square * num_per_row
+    plate_height  = square * ceil((jig.num_plates / num_per_row))
+
+    out = svgwrite.Drawing(out_file, (plate_width, plate_height))
+    xfm = svgwrite.mixins.Transform
     
-    out.add(dwg)
-    # for i in range(1,numPlates+1):
-    
-    #     rocket = SVG("g", body, finset, transform="rotate({},{},{})".format(fin_angle/2,center,center))
-    #     plates.append(SVG("g", edge, rocket, transform="translate({},{})".format(xpos, ypos)))
-    #     if i % numPerRow == 0:
-    #         xpos = 0
-    #         ypos += square + 2    
-    #     else:
-    #         xpos += square + 2
+    for i in range(jig.num_plates):
+        cutout_cp = copy.deepcopy(cutout)
+        x_offset = i % num_per_row * square
+        y_offset = floor(i / num_per_row) * square
+            
+        xfm.translate(cutout_cp, tx = x_offset, ty = y_offset)
+        out.add(cutout_cp)
+
+        
+        # if i % numPerRow == 0:
+        #     xpos = 0
+        #     ypos += square + 2    
+        # else:
+        #     xpos += square + 2
 
     out.save()
 
