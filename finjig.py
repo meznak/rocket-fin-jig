@@ -75,7 +75,7 @@ def draw_jig(jig):
 
     jig.cutout.add(edge)
 
-    xfm.scale(text, 5)
+    xfm.scale(text, 1.5)
     jig.cutout.add(text)
 
     fin = svgwrite.container.Group()
