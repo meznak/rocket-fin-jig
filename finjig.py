@@ -68,7 +68,7 @@ def draw_jig(jig):
     body = shapes.Circle(center=(mm(center), mm(center)), r=mm(jig.body_r), stroke="black", stroke_width=stroke_width, fill="white")
     fin_x_pos = center - jig.fin_w / 2.0
     fin_y_pos = center - jig.fin_h - jig.body_r
-    fin_angle = 360 / jig.num_fins
+    fin_angle = 360.0 / jig.num_fins
 
     # assemble cutout
     xfm = svgwrite.mixins.Transform
@@ -129,7 +129,7 @@ def mm(val):
     """Scale from px to mm"""
     return val * 3.543307
 
-j
+
 if __name__ == '__main__':
     import sys
     args = len(sys.argv)
